@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			#canvas1 {
+				/*background-color: gainsboro;*/
+				box-shadow: 0 0 3px red;
+			}
+		</style>
+	</head>
+
+	<body>
+		<canvas id="canvas1" width="600" height="600">
+			浏览器版本那么低，你咋不上天呢？
+		</canvas>
+	</body>
+	<script type="text/javascript">
+		var canvas = document.getElementById('canvas1');
+		var context = canvas.getContext('2d');
+		//Math.PI:180°
+		var deg = Math.PI / 180;
+
+		function random(min, max) {
+			return parseInt(Math.random() * (max - min + 1) + min);
+		}
+
+		function Qiu(x, y, r, color, speedX, speedY) {
+			this.x = x;
+			this.y = y;
+			this.r = r;
+			this.color = color;
+			this.speedX = speedX;
+			this.speedY = speedY;
+		}
+		Qiu.prototype.draw = function() {
+			context.beginPath();
+			context.fillStyle = this.color;
+			context.arc(this.x, this.y, this.r, 0, 360 * deg);
+			context.fill()
+		}
+		Qiu.prototype.move = function() {
+			if((this.x + this.r) >= canvas.width || (this.x - this.r) <= 0) {
+				this.speedX *= -1;
+			}
+			if((this.y + this.r) >= canvas.height || (this.y - this.r) <= 0) {
+				this.speedY *= -1;
+			}
+			this.x += this.speedX;
+			this.y += this.speedY;
+		}
+
+		function Judge(arr) {
+			this.elements = arr;
+		}
+		Judge.prototype.touchs = function() {
+			for(var i = 0; i < this.elements.length; i++) {
+				for(var j = 0; j < this.elements.length && j != i; j++) {
+					var d = Math.sqrt(Math.pow((this.elements[i].x - this.elements[j].x), 2)+Math.pow((this.elements[i].y - this.elements[j].y), 2));
+					var dis=this.elements[i].r+this.elements[j].r;
+					if(d<=dis){
+						this.elements[i].speedX *= -1;
+						this.elements[i].speedY *= -1;
+						this.elements[j].speedX *= -1;
+						this.elements[j].speedY *= -1;
+					}
+				}
+			}
+		}
+
+		var qiuArr = [];
+		for(var i = 0; i < 5; i++) {
+			var r = random(30, 50);
+			var x = random(r, canvas.width - r);
+			var y = random(r, canvas.width - r);
+			var color = "rgb(" + random(0, 255) + "," + random(0, 255) + "," + random(0, 255) + ")";
+			var speedx = random(2, 5);
+			var speedy = random(2, 5);
+			var qiu = new Qiu(x, y, r, color, speedx, speedy);
+			qiuArr.push(qiu);
+		}
+		
+		
+		var qiuJudge = new Judge(qiuArr);
+
+		function ani() {
+			context.clearRect(0, 0, canvas.width, canvas.height);
+			for(var i = 0; i < qiuArr.length; i++) {
+				qiuArr[i].draw();
+				qiuArr[i].move()
+			}
+			qiuJudge.touchs()
+			window.requestAnimationFrame(ani);
+		}
+		ani();
+	</script>
+
+</html>

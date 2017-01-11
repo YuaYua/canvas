@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			#canvas1 {
+				background-color: gainsboro;
+				box-shadow: 0 0 3px red;
+			}
+		</style>
+	</head>
+
+	<body>
+		<canvas id="canvas1" width="600" height="600">
+			浏览器版本那么低，你咋不上天呢？
+		</canvas>
+	</body>
+	<script type="text/javascript">
+		var canvas = document.getElementById('canvas1');
+		var context = canvas.getContext('2d');
+//		context.beginPath();
+//		context.moveTo(20, 20);
+		//起点
+		var x = 20,
+			y = 20;
+		//转折点
+		var lineArr = [{
+			x:20,
+			y:20
+		},{
+			x: 100,
+			y: 200
+		}, {
+			x: 300,
+			y: 500
+		}, {
+			x: 400,
+			y: 200
+		}]
+//		console.log(lineArr[0].x)
+		var pointArr=point();
+		function point() {
+			var pointArr=[];
+			for(var i=1;i<lineArr.length;i++){
+				for(var j=0;j<100;j++){
+					var pointObj={};
+					pointObj.x = lineArr[i-1].x + (lineArr[i].x - lineArr[i-1].x) * j / 100;
+					pointObj.y = lineArr[i-1].y + (lineArr[i].y - lineArr[i-1].y) * j / 100;
+					pointArr.push(pointObj);
+				}
+			}
+			return pointArr;
+		}
+		console.log(pointArr.length)
+		var times=1;
+		function move(){
+			if(times<pointArr.length){
+				context.beginPath();
+				context.moveTo(pointArr[times-1].x, pointArr[times-1].y);
+				context.lineTo(pointArr[times].x,pointArr[times].y);
+				context.stroke();
+				window.requestAnimationFrame(move);
+			}
+			times++;
+		}
+		move();
+	</script>
+
+</html>

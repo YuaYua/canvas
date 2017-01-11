@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			#canvas1 {
+				/*background-color: gainsboro;*/
+				box-shadow: 0 0 3px red;
+			}
+			#name{
+				position: absolute;
+				left: 175px;
+				top: 113px;
+			}
+			#time{
+				position: absolute;
+				left: 175px;
+				top: 203px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<input type="text" name="name" id="name" value="" />
+		<input type="text" name="time" id="time" value="" />
+		<canvas id="canvas1" width="600" height="600">
+			浏览器版本那么低，你咋不上天呢？
+		</canvas>
+		<button onclick="sub()">购买</button>
+		<a href="" id="as">跳转</a>
+	</body>
+	<script type="text/javascript">
+		var canvas = document.getElementById('canvas1');
+		var context = canvas.getContext('2d');
+		//Math.PI:180°
+		var deg = Math.PI / 180;
+		var names=document.getElementById('name');
+		var times=document.getElementById('time');
+		var as=document.getElementById('as')
+		
+		var url="";
+		var img=new Image();
+		img.src="66A7B05FB5E42F66927D19967FE047FA.jpg";
+		img.onload=function(){
+			//此方法是在img加载完执行的，
+			context.drawImage(img,0,0);
+			//此时不能对input进行操作，
+			//获取到的input.value必定是一个空值
+//			var namess=names.value;
+//			context.strokeText(namess,175,123);
+//			url=canvas.toDataURL();
+			
+		}
+		function sub(){
+			//当进入button的点击方法是代表着此时用户已经输入了name和time
+			
+			var namess=names.value;
+			context.strokeText(namess,175,123);
+			var timess=times.value;
+			context.strokeText(timess,175,213);
+			//此时获取的canvas像素就包括了input输入的内容了
+			//方法er需要将我们生成的图片url类型换成"image/octet-stream"
+			//这样当点击a标签的时候，浏览器就知道我是要下载
+			url=canvas.toDataURL("image/jpeg").replace("image/jpeg","image/octet-stream");
+			as.href=url;
+			//方法一：用a的download属性下载
+//			as.download="imgs.jpg";
+//			as.click();
+//			window.location.href=url;
+		}
+		
+		
+	</script>
+
+</html>

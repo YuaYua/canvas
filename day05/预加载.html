@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+	</body>
+	<script type="text/javascript">
+		
+		
+		function loading(imgObj,obj){
+			var length=0;
+			for(var keys in imgObj){
+				length++;
+			}
+			var num=0;
+			var objImg={};
+			for(var keys in imgObj){
+				var img=new Image();
+				img.src=imgObj[keys];
+				img.onload=(function(keyy){
+					return function(){
+						num++;
+						var loads=num/length;
+						objImg[keyy]=this;
+						if(obj.load){
+							obj.load(loads);
+						}
+						if(num>=length){
+							obj.complete(objImg);
+						}
+					}
+					
+				})(keys)
+			}
+		}
+	
+		loading({
+			"bg":"img/background.png",
+			"hero":"img/herofly.png",
+			"bullet":"img/bullet1.png",
+			"enemy1":"img/enemy1.png",
+			"enemy2":"img/enemy2.png",
+			"enemy3":"img/enemy3.png"
+		},{
+			complete:main,
+			load:load
+		})
+		
+		function main(imgs){
+			console.log("加载完成");
+			console.log(imgs);
+		}
+		
+		function load(loads){
+			console.log(loads);
+		}
+		
+	</script>
+</html>

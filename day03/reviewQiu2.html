@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			#canvas1 {
+				/*background-color: gainsboro;*/
+				box-shadow: 0 0 3px red;
+			}
+		</style>
+	</head>
+
+	<body>
+		<canvas id="canvas1" width="600" height="600">
+			浏览器版本那么低，你咋不上天呢？
+		</canvas>
+	</body>
+	<script type="text/javascript">
+		var canvas = document.getElementById('canvas1');
+		var context = canvas.getContext('2d');
+		//Math.PI:180°
+		var deg = Math.PI / 180;
+		function random(min,max){
+			return parseInt(Math.random()*(max-min+1)+min);
+		}
+		
+		function Qiu(x,y,r,color,speedx,speedy){
+			this.r=r;
+			this.x=x;
+			this.y=y;
+			this.color=color;
+			this.speedx=speedx;
+			this.speedy=speedy;
+		}
+		Qiu.prototype.draw=function(){
+			context.beginPath();
+			context.arc(this.x,this.y,this.r,0,360*deg);
+			context.fillStyle=this.color;
+			context.fill();
+		}
+		Qiu.prototype.move=function(){
+			if((this.x+this.r)>=canvas.width || (this.x-this.r)<=0){
+				this.speedx*=-1;
+			}
+			if((this.y+this.r)>=canvas.height || (this.y-this.r)<=0){
+				this.speedy*=-1;
+			}
+			this.x+=this.speedx;
+			this.y+=this.speedy;
+		}
+		
+		
+		var qiuArr=[];
+		for(var i=0;i<50;i++){
+			var r=random(10,30);
+			var x=random(r,canvas.width-r);
+			var y=random(r,canvas.height-r);
+			var color="rgb("+random(0,255)+","+random(0,255)+","+random(0,255)+")";
+			var speedx=random(5,10);
+			var speedy=random(5,10);
+			var qiu=new Qiu(x,y,r,color,speedx,speedy);
+			
+			qiuArr.push(qiu);
+		}
+		function ani(){
+			context.clearRect(0,0,canvas.width,canvas.height);
+			for(var i=0;i<qiuArr.length;i++){
+				
+				qiuArr[i].draw();
+				qiuArr[i].move();
+			}
+			window.requestAnimationFrame(ani);
+		}
+		ani();
+		
+		
+		
+		
+	</script>
+
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+	</body>
+	<script type="text/javascript">
+		function $(arg){
+			return new Jq(arg)
+		}
+		
+		function ready(fn){
+			if(window.addEventListener){
+				document.addEventListener("DOMContentLoaded",fn,false);
+			}else{
+				var os=document.createElement("script");
+				os.defer=true;
+				os.onreadystatechange=function(){
+					if(os.readyState="complete"){
+						fn();
+					}
+				}
+				var oh=document.getElementsByTagName("head")[0];
+				oh.appendChild(os);
+			}
+		}
+		
+		function Jq(arg){
+			this.elements=[];
+			if(typeof arg=="string"){
+				this.elements=selectEl();
+			}else if(typeof arg=="function"){
+				ready(arg);
+			}else{
+				this.elements.push(arg);
+			}
+		}
+		
+		$(function(){
+			console.log(1);
+		})
+		
+	</script>
+</html>

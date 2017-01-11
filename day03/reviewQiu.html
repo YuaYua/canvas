@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			#canvas1 {
+				/*background-color: gainsboro;*/
+				box-shadow: 0 0 3px red;
+			}
+		</style>
+	</head>
+
+	<body>
+		<canvas id="canvas1" width="600" height="600">
+			浏览器版本那么低，你咋不上天呢？
+		</canvas>
+	</body>
+	<script type="text/javascript">
+		var canvas = document.getElementById('canvas1');
+		var context = canvas.getContext('2d');
+		//Math.PI:180°
+		var deg = Math.PI / 180;
+
+		function Ju(x, y, w, h, color, speedx, speedy) {
+			this.x = x;
+			this.y = y;
+			this.w = w;
+			this.h = h;
+			this.color = color;
+//			this.ttb = ttb;
+//			this.ltr = ltr;
+			this.speedx = speedx;
+			this.speedy = speedy;
+			this.update = false;
+		}
+		Ju.prototype.draw = function() {
+			context.beginPath();
+			context.rect(this.x, this.y, this.w, this.h);
+			context.fillStyle = this.color;
+			context.fill();
+		}
+		Ju.prototype.move = function() {
+			//检测碰壁反弹
+			if(this.x + this.w >= canvas.width || this.x <= 0) {
+				this.speedx = this.speedx * (-1);
+			}
+			if(this.y + this.h >= canvas.height || this.y <= 0) {
+				this.speedy = this.speedy * (-1);
+			}
+			this.x += this.speedx;
+			this.y += this.speedy;
+			this.update = false;
+		}
+
+		var ju1 = new Ju(150, 50, 50, 50, "red", 5, 8);
+		var ju2 = new Ju(150, 250, 50, 50, "blue", 8, 8);
+		var ju3 = new Ju(350, 250, 50, 50, "pink", 8, 8);
+		var arr = [ju1, ju2,ju3];
+
+		function ani() {
+			context.clearRect(0, 0, canvas.width, canvas.height);
+			for(var i = 0; i < arr.length; i++) {
+				arr[i].draw();
+				arr[i].move();
+			}
+
+			//碰撞检测
+			for(var j = 0; j < arr.length; j++) {
+				for(var k = 0; k < arr.length; k++) {
+					//要进行比较的元素
+					//					arr[j]
+					//arr[j]要进行比较的数组元素
+					//					arr[k]
+					if(j != k) {
+						if(peng(arr[j], arr[k])) {
+							if(arr[j].update == false) {
+								arr[j].speedx *= -1;
+								arr[j].speedy *= -1;
+								arr[j].update = true;
+							}
+							if(arr[k].update == false) {
+								arr[k].speedx *= -1;
+								arr[k].speedy *= -1;
+								arr[k].update = true;
+							}
+						}
+					}
+
+				}
+			}
+			window.requestAnimationFrame(ani);
+		}
+		ani();
+
+		function peng(r1, b1) {
+			var r1l = r1.x + r1.w;
+			var r1h = r1.y + r1.h;
+			var b1l = b1.x + b1.w;
+			var b1h = b1.y + b1.h;
+			if(r1.x < b1l && b1.x < r1l && b1.y < r1h && r1.y < b1h) {
+				return true;
+			}
+			return false
+				//撞了的情况
+				//			r1.x<b1.x+b1.w;
+				//			r1.y<b1.y+b1.h;
+				//			r1.x+r1.w>b1.x;
+				//			r1.y+r1.h>b1.y;
+
+		}
+	</script>
+
+</html>

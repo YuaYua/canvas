@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			canvas{
+				box-shadow: 0 0 3px orange;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="canvas" width="600" height="600"></canvas>
+	</body>
+	<script type="text/javascript">
+		var canvas=document.getElementById('canvas');
+		var con=canvas.getContext("2d");
+		var deg=Math.PI/180;
+		
+		function draw(){
+			con.beginPath();
+			con.arc(300,300,200,0,360*deg);
+			con.stroke();
+			con.save();
+			
+			con.translate(300,300);
+			
+			for(var i=0;i<60;i++){
+				con.save();
+				con.rotate(6*i*deg);
+				con.fillRect(180,0,10,6);
+				con.restore();
+			}
+			
+			con.restore();
+			
+		}
+		setInterval(function(){
+			draw()
+		},1000)
+		
+	</script>
+</html>

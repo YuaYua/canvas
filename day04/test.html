@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			#canvas1 {
+				background-color: gainsboro;
+				box-shadow: 0 0 3px red;
+			}
+		</style>
+	</head>
+
+	<body>
+		<canvas id="canvas1" width="600" height="600">
+			浏览器版本那么低，你咋不上天呢？
+		</canvas>
+	</body>
+	<script type="text/javascript">
+		var canvas = document.getElementById('canvas1');
+		var context = canvas.getContext('2d');
+		//Math.PI:180°
+		var deg = Math.PI / 180;
+
+		function Rect(x, y, w, h, color) {
+			this.x = x;
+			this.y = y;
+			this.w = w;
+			this.h = h;
+			this.color = color;
+		}
+		Rect.prototype.draw = function() {
+			context.beginPath();
+			context.rect(this.x, this.y, this.w, this.h);
+			context.fillStyle = this.color;
+			context.fill();
+			context.stroke();
+		}
+		Rect.prototype.move = function() {
+			switch(snake.fx) {
+				case 37:
+					this.x -= this.w;
+					break;
+				case 38:
+					this.y -= this.h;
+					break;
+				case 39:
+					this.x += this.w;
+					break;
+				case 40:
+					this.y += this.h;
+					break;
+				default:
+					break;
+			}
+		}
+
+		function Snake() {
+			this.fx = 37;
+			this.update = true;
+			this.ani=true;
+			this.bodyArr = [];
+			for(var i = 0; i < 4; i++) {
+				var rect1 = new Rect(400 + i * 50, 300, 50, 50, "red");
+				this.bodyArr.push(rect1);
+			}
+			this.bodyArr[0].color = "green";
+		}
+
+		Snake.prototype.move = function() {
+			var rect2 = new Rect(this.bodyArr[0].x, this.bodyArr[0].y, this.bodyArr[0].w, this.bodyArr[0].h, "red");
+			this.update = false;
+			this.bodyArr.splice(1, 0, rect2);
+			if(food.x==this.bodyArr[0].x&&food.y==this.bodyArr[0].y){
+				food=createFood();
+			}else{
+				this.bodyArr.pop();
+			}
+			this.bodyArr[0].move();
+			for(var i=1;i<this.bodyArr.length;i++){
+				if(this.bodyArr[0].x==this.bodyArr[i].x&&this.bodyArr[0].y==this.bodyArr[i].y){
+					this.ani=false;
+					window.cancelAnimationFrame(inits);
+				}
+			}
+		}
+		
+		function rand(min,max){
+			return Math.random()*(max-min+1)+min;
+		}
+		
+		function createFood(){
+			var flag=true;
+			while(flag){
+				var x=parseInt(rand(0,11));
+				var y=parseInt(rand(0,11));
+				for(var i=0;i<snake.bodyArr.length;i++){
+					if(snake.bodyArr[i].x==x*50&&snake.bodyArr[i].y==y*50){
+						flag=true;
+						break;
+					}else{
+						flag=false;
+					}
+				}
+			}
+			var food=new Rect(x*50,y*50,50,50,"gold");
+			return food;
+			
+		}
+
+		var snake = new Snake();
+		var times = 0;
+		var food=createFood();
+		var inits=null;
+		function ani() {
+			if(times % 20 == 0) {
+				context.clearRect(0, 0, canvas.width, canvas.height);
+				
+				for(var i = 0; i < snake.bodyArr.length; i++) {
+					snake.bodyArr[i].draw();
+				}
+				food.draw();
+				snake.move();
+				
+			}
+			times++;
+			if(snake.ani){
+				inits=window.requestAnimationFrame(ani)
+			}
+			
+
+		}
+		ani();
+
+		document.onkeydown = function(e) {
+			var ev = e || event;
+			if(snake.update == false) {
+				switch(ev.keyCode) {
+					case 37:
+						if(snake.fx != 39) {
+							snake.fx = 37;
+							snake.update=true;
+						}
+						break;
+					case 38:
+						if(snake.fx != 40) {
+							snake.fx = 38;
+							snake.update=true;
+						}
+						break;
+					case 39:
+						if(snake.fx != 37) {
+							snake.fx = 39;
+							snake.update=true;
+						}
+						break;
+					case 40:
+						if(snake.fx != 38) {
+							snake.fx = 40;
+							snake.update=true;
+						}
+						break;
+					default:
+						break
+				}
+			}
+
+		}
+	</script>
+
+</html>

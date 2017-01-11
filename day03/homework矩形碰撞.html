@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			#canvas1 {
+				/*background-color: gainsboro;*/
+				box-shadow: 0 0 3px red;
+			}
+		</style>
+	</head>
+
+	<body>
+		<canvas id="canvas1" width="800" height="600">
+			浏览器版本那么低，你咋不上天呢？
+		</canvas>
+	</body>
+	<script type="text/javascript">
+		var canvas = document.getElementById('canvas1');
+		var context = canvas.getContext('2d');
+		//Math.PI:180°
+		var deg = Math.PI / 180;
+
+
+		function random(min,max){
+			return parseInt(Math.random()*(max-min+1)+min);
+		}
+		
+		
+		function Ju(x, y, w, h, color, speedx, speedy) {
+			this.x = x;
+			this.y = y;
+			this.w = w;
+			this.h = h;
+			this.color = color;
+			this.speedx = speedx;
+			this.speedy = speedy
+		}
+
+		Ju.prototype.draw = function() {
+			context.beginPath();
+			context.rect(this.x,this.y,this.w,this.h);
+			context.fillStyle=this.color;
+			context.fill();
+		}
+		Ju.prototype.move = function() {
+			if((this.x + this.w) >= canvas.width || this.x <= 0) {
+				this.speedx *= -1;
+			}
+			if((this.y + this.h) >= canvas.height || this.y <= 0) {
+				this.speedy *= -1;
+			}
+			this.x += this.speedx;
+			this.y += this.speedy;
+		}
+		
+		function Judge(arr) {
+			this.elements = arr;
+		}
+		Judge.prototype.touchs = function() {
+			for(var i = 0; i < this.elements.length; i++) {
+				for(var j = 0; j < this.elements.length && j != i; j++) {
+					if(!((this.elements[i].y + this.elements[i].h) < this.elements[j].y || (this.elements[i].x + this.elements[i].w) < this.elements[j].x || this.elements[i].x > (this.elements[j].x + this.elements[j].w) || this.elements[i].y > (this.elements[j].y + this.elements[j].h) )) {
+						this.elements[i].speedx *= -1;
+						this.elements[i].speedy *= -1;
+						this.elements[j].speedx *= -1;
+						this.elements[j].speedy *= -1;
+					}
+				}
+			}
+		}
+
+		//		var wArr=new Judge();
+
+		var arr=[];
+		for(var i=0;i<5;i++){
+			var w=random(50,100);
+			var h=random(50,100);
+			var x=random(0,canvas.width-w);
+			var y=random(0,canvas.height-h);
+			
+			var color="rgb("+random(0,255)+","+random(0,255)+","+random(0,255)+")";
+			var speedx=random(2,6);
+			var speedy=random(2,6);
+			var ju=new Ju(x,y,w,h,color,speedx,speedy);
+			arr.push(ju);
+			
+		}
+		var wArr = new Judge(arr);
+//		console.log(wArr.elements);
+//		wArr.touchs();
+		function ani() {
+			context.clearRect(0, 0, canvas.width, canvas.height);
+			for(var i = 0; i < arr.length; i++) {
+				arr[i].draw();
+				arr[i].move()
+			}
+			wArr.touchs();
+			window.requestAnimationFrame(ani)
+		}
+		ani();
+	</script>
+
+</html>

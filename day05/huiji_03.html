@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<title></title>
+		<style type="text/css">
+			body,
+			html {
+				margin: 0;
+				padding: 0;
+			}
+			
+			#canvas1 {
+				/*background-color: gainsboro;*/
+				box-shadow: 0 0 2px red;
+				/*margin-left: 50px;*/
+			}
+			
+			#load {
+				width: 200px;
+				height: 200px;
+				background: orchid;
+				position: absolute;
+				left: 0;
+				top: 0;
+				display: none;
+			}
+			#restart{
+				border: 2px solid #00FFFF;
+				
+			}
+		</style>
+	</head>
+
+	<body>
+		<canvas id="canvas1" width="" height="">
+			浏览器版本那么低，你咋不上天呢？
+		</canvas>
+		<div id="load">
+			<button id="restart">重新开始</button>
+		</div>
+	</body>
+	<script src="../../oop/JQuery-3.1.1.min.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		var canvas = document.getElementById('canvas1');
+		var context = canvas.getContext('2d');
+		var loadDiv = document.getElementById('load')
+			//Math.PI:180°
+		var deg = Math.PI / 180;
+
+		function loading(objImg, obj) {
+			var length = 0;
+			for(var keys in objImg) {
+				length++;
+			}
+			var num = 0;
+			//储存img对象的
+			var imgObj = {}
+			for(var keys in objImg) {
+				var img = new Image();
+				img.src = objImg[keys];
+
+				//闭包避免变量污染
+				//因为闭包是匿名函数的自执行
+				//这里相当于把匿名函数执行了，而匿名函数执行时this指向的就是window
+				img.onload = (function(keyy) {
+						//					console.log(this)
+						//					console.log("wai")
+						//在该闭包中我们让匿名函数返回出去一个方法，所以最终实现的效果就是给我们的img.onload绑定了一个方法，
+						//只不过这个方法使用的就是我们当前的循环变量而不是循环结束后的最后一个值了
+						//而此时当这个方法执行时真正的执行者就是我们当前加载好的图片，所以此时的this就是我们的img对象
+						return function() {
+							//						console.log(this)
+							//						console.log("nei")
+							num++;
+							imgObj[keyy] = this;
+							var loads = num / length;
+							if(obj.load) {
+								obj.load(loads);
+							}
+
+							//图片加载完
+							if(num >= length) {
+								if(obj.complete) {
+									obj.complete(imgObj);
+								}
+							}
+						}
+					})(keys)
+					//或给每个img设置属性避免变量污染
+					//img.keyss=keys;
+					//				img.onload = function() {
+					//					num++;
+					//					imgObj[this.keyss] = this;
+					//					var loads = num / length;
+					//					if(obj.load) {
+					//						obj.load(loads);
+					//					}
+					//
+					//					//图片加载完
+					//					if(num >= length) {
+					//						if(obj.complete) {
+					//							obj.complete(imgObj);
+					//						}
+					//					}
+					//				}
+			}
+		}
+
+		//预加载方法能帮我们实现
+		//图片的加载以及加载完成后调用我们想要执行的方法，并有进度传递
+		loading({
+			"bg": "img/background.png",
+			"hero": "img/herofly.png",
+			"bullet": "img/bullet2.png",
+			"enemy1": "img/enemy1.png",
+			"enemy2": "img/enemy2.png",
+			"enemy3": "img/enemy3.png",
+		}, {
+			complete: main,
+			load: load,
+		});
+		//加载完成
+		function main(imgObj) {
+			//canvas 适应手机屏幕宽高
+			var windowWidth = document.documentElement.clientWidth;
+			var windowHeight = document.documentElement.clientHeight;
+			canvas.width = windowWidth;
+			canvas.height = windowHeight;
+
+			//			console.log(imgObj)
+			//			context.drawImage(imgObj.enemy1, 200, 200)
+			//			console.log("main执行了")
+
+			//英雄机
+			function Hero() {
+				this.img = imgObj.hero;
+				this.x = canvas.width / 2 - this.img.width / 5 / 2;
+				this.y = canvas.height - this.img.height * 2;
+				this.w = this.img.width / 5;
+				this.h = this.img.height;
+				this.index = 0;
+				this.len = 5;
+				this.ani=true;
+				this.life = true;
+			}
+			Hero.prototype.draw = function() {
+					context.drawImage(this.img, this.img.width / 5 * this.index, 0, this.img.width / 5, this.img.height, this.x, this.y, this.w, this.h)
+				}
+				//子弹
+			function Bullet() {
+				this.img = imgObj.bullet;
+				this.w = this.img.width;
+				this.h = this.img.height;
+				this.x = hero.x + (hero.w - this.w) / 2;
+				this.y = hero.y + hero.h / 2 - 2 * this.h;
+				this.speedY = 5;
+				this.power = 1;
+			}
+			Bullet.prototype.draw = function() {
+				context.drawImage(this.img, this.x, this.y);
+			}
+			Bullet.prototype.move = function() {
+				this.y -= this.speedY;
+			}
+
+			function Enemy() {
+				var num = rand(1, 20);
+				if(num >= 1 && num <= 10) {
+					//小敌机
+					this.img = imgObj.enemy1;
+					this.w = this.img.width / 5;
+					this.hp = 1;
+					this.len = 5;
+					this.speedY = 8;
+				} else if(num >= 11 && num <= 17) {
+					//中敌机
+					this.img = imgObj.enemy3;
+					this.w = this.img.width / 6;
+					this.hp = 3;
+					this.len = 6;
+					this.speedY = 5;
+				} else {
+					this.img = imgObj.enemy2;
+					this.w = this.img.width / 10;
+					this.hp = 8;
+					this.len = 10;
+					this.speedY = 1;
+				}
+				this.x = rand(0, canvas.width - this.w);
+				this.h = this.img.height;
+				this.y = -this.h;
+				this.index = 0;
+				this.life = true;
+			}
+			Enemy.prototype.draw = function() {
+				context.drawImage(this.img, this.w * this.index, 0, this.w, this.h, this.x, this.y, this.w, this.h);
+			}
+			Enemy.prototype.move = function() {
+				this.y += this.speedY;
+			}
+
+			var hero = new Hero();
+			var bulletArr = [];
+			var enemyArr = [];
+			var times = 0;
+			var text1 = 0;
+			var ints=null;
+			function ani() {
+				if(times >= canvas.height) {
+					times = 0;
+				}
+				context.clearRect(0, 0, canvas.width, canvas.height);
+
+				context.drawImage(imgObj.bg, 0, times, canvas.width, canvas.height);
+				context.drawImage(imgObj.bg, 0, times - canvas.height, canvas.width, canvas.height);
+				hero.draw();
+				
+
+				if(times % 20 == 0) {
+					var bullet = new Bullet();
+					bulletArr.push(bullet);
+
+				}
+				for(var i = 0; i < bulletArr.length; i++) {
+					if(bulletArr[i].y <= -bulletArr[i].h) {
+						bulletArr.splice(i, 1);
+						i--;
+						continue;
+					}
+					bulletArr[i].draw();
+					bulletArr[i].move();
+				}
+
+				if(times % 50 == 0) {
+					var enemy1 = new Enemy();
+					enemyArr.push(enemy1);
+
+				}
+				for(var i = 0; i < enemyArr.length; i++) {
+					if(enemyArr[i].y >= canvas.height) {
+						enemyArr.splice(i, 1);
+						i--;
+						continue;
+					}
+					enemyArr[i].move();
+					if(enemyArr[i].life == false) {
+						if(enemyArr[i].index < enemyArr[i].len) {
+							if(times % 3 == 0) {
+								enemyArr[i].index++;
+							}
+							enemyArr[i].draw();
+						} else {
+							enemyArr.splice(i, 1);
+							//分数加一
+							text1++;
+							i--;
+							continue;
+						}
+					}
+					enemyArr[i].draw();
+				}
+				context.font = "50px serif";
+				context.fillStyle = "red";
+				context.fillText(text1, canvas.width - 100, 50);
+
+				//英雄机和敌机碰撞
+				for(var i = 0; i < enemyArr.length; i++) {
+					if(peng(hero, enemyArr[i])) {
+						hero.life = false;
+						for(var j = 0; j < enemyArr.length; j++) {
+							enemyArr[j].life = false;
+							enemyArr[j].speedY = 0;
+						}
+					}
+				}
+
+				//子弹和敌机碰撞
+				//清空整个屏幕敌机
+				//游戏结束
+				for(var i = 0; i < bulletArr.length; i++) {
+					for(var j = 0; j < enemyArr.length; j++) {
+						if(peng(bulletArr[i], enemyArr[j])) {
+							enemyArr[j].hp -= bulletArr[i].power;
+							bulletArr.splice(i, 1);
+							i--;
+							if(enemyArr[j].hp <= 0) {
+								enemyArr[j].life = false;
+								enemyArr[j].speedY = 0;
+							}
+							break;
+						}
+					}
+				}
+				if(hero.life == false) {
+					if(times % 6 == 0) {
+						hero.index++;
+					}
+					hero.draw();
+					if(hero.index>hero.len){
+						hero.ani=false;
+						context.clearRect(0, 0, canvas.width, canvas.height);
+						context.drawImage(imgObj.bg, 0, times, canvas.width, canvas.height);
+						context.drawImage(imgObj.bg, 0, times - canvas.height, canvas.width, canvas.height);
+						window.cancelAnimationFrame(ints)
+					}
+				}
+
+				times++;
+				if(hero.ani){
+					ints=window.requestAnimationFrame(ani);
+				}
+				//重新开始
+//				if(hero.ani==false){
+//					$("#load").show()
+//					$("#restart").click(function(){
+//						$("#load").hide();
+//						hero.ani=true;
+//						ani()
+//					})
+//				}
+//				window.requestAnimationFrame(ani);
+			}
+			ani();
+			
+			canvas.addEventListener("touchmove", function(e) {
+				var ev = e || event;
+				//				console.log(ev);
+				var x = ev.touches[0].clientX;
+				var y = ev.touches[0].clientY;
+				//				console.log(x,y)
+				hero.x = x - hero.w / 2;
+				hero.y = y - hero.h / 2;
+			}, false);
+		}
+
+		function rand(min, max) {
+			return Math.random() * (max - min + 1) + min;
+		}
+		//碰撞检测
+		function peng(r1, b1) {
+			var r1l = r1.x + r1.w;
+			var r1h = r1.y + r1.h;
+			var b1l = b1.x + b1.w;
+			var b1h = b1.y + b1.h;
+			if(r1.x < b1l && b1.x < r1l && b1.y < r1h && r1.y < b1h) {
+				return true;
+			}
+			return false;
+		}
+
+		//未加载完成  进度
+		function load(loads) {
+			//			loadDiv.innerText=loads;
+			//			alert(1)
+			//			console.log("我执行了");
+			//			console.log(loads);
+		}
+	</script>
+
+</html>

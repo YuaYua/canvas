@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			#canvas1 {
+				background-color: gainsboro;
+				box-shadow: 0 0 3px red;
+			}
+		</style>
+	</head>
+
+	<body>
+		<canvas id="canvas1" width="600" height="600">
+			浏览器版本那么低，你咋不上天呢？
+		</canvas>
+	</body>
+	<script type="text/javascript">
+		var canvas = document.getElementById('canvas1');
+		var context = canvas.getContext('2d');
+		//Math.PI:180°
+		var deg = Math.PI / 180;
+
+		function loading(imgObj, obj) {
+			var length = 0;
+			for(var keys in imgObj) {
+				length++;
+			}
+			var num = 0;
+			var objImg = {};
+			for(var keys in imgObj) {
+				var img = new Image();
+				img.src = imgObj[keys];
+				img.onload = (function(keyy) {
+					return function() {
+						objImg[keyy] = this;
+						num++;
+						var loads = num / length;
+						if(obj.load) {
+							obj.load(loads)
+						}
+						if(num >= length) {
+							if(obj.complete) {
+								obj.complete(objImg);
+							}
+						}
+					}
+				})(keys);
+			}
+		}
+
+		loading({
+			"bomb": "img/bomb.png",
+			"prop": "img/prop.png",
+		}, {
+			complete: main,
+			load: load,
+		})
+
+		function main(imgs) {
+//			console.log(imgs)
+			//声明图片对象
+			var img1={
+				img:imgs.bomb,
+				x:200,
+				y:200,
+				w:imgs.bomb.width,
+				h:imgs.bomb.height,
+			};
+			var img2={
+				img:imgs.prop,
+				x:0,
+				y:0,
+				w:imgs.prop.width,
+				h:imgs.prop.height,
+			}
+			document.onmousemove=function(e){
+				context.clearRect(0,0,canvas.width,canvas.height);
+				
+				var ev=e||event;
+				img2.x=ev.clientX-canvas.offsetLeft;
+				img2.y=ev.clientY-canvas.offsetTop;
+				//绘制不动的
+				context.drawImage(img1.img,img1.x,img1.y,img1.w,img1.h);
+				//绘制跟随鼠标坐标改变的图片
+				context.drawImage(img2.img,img2.x,img2.y,img2.w,img2.h);
+				//先判断两图片的矩形区域有无相撞
+				if(peng(img1,img2)){
+					console.log("1")
+					//撞上了
+					//循环检测两位图在两张图片范围内是否有一点像素的alpha都不为零，如果有则说明相撞
+					var minx=img1.x>img2.x?img1.x:img2.x;
+					var maxx=img1.x+img1.w<img2.x+img2.w?img1.x+img1.w:img2.x+img2.w;
+					var miny=img1.y>img2.y?img1.y:img2.y;
+					var maxy=img1.y+img1.h<img2.y+img2.h?img1.y+img1.h:img2.y+img2.h;
+					context.clearRect(0,0,canvas.width,canvas.height);
+					context.drawImage(img1.img,img1.x,img1.y);
+					var data1=context.getImageData(minx,miny,maxx-minx,maxy-miny).data;
+					context.clearRect(0,0,canvas.width,canvas.height);
+					context.drawImage(img2.img,img2.x,img2.y);
+					var data2=context.getImageData(minx,miny,maxx-minx,maxy-miny).data;
+					context.drawImage(img1.img,img1.x,img1.y);
+					for(var i=3;i<data1.length;i+=4){
+						if(data1[i]>0&&data2[i]>0){
+							console.log("撞上了")
+							break;
+						}else{
+							document.title="dd"
+						}
+					}
+					
+					
+				}
+			}
+		}
+
+		function load(loads) {
+			console.log(loads)
+			
+		}
+		
+		//矩形碰撞检测
+		function peng(r1,b1){
+			var r1l=r1.x+r1.w;
+			var r1h=r1.y+r1.h;
+			var b1l=b1.x+b1.w;
+			var b1h=b1.y+b1.h;
+			if(r1.x < b1l && b1.x < r1l && b1.y < r1h && r1.y < b1h){
+				return true;
+			}
+			return false;
+		}
+	</script>
+
+</html>

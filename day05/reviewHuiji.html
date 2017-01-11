@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<style type="text/css">
+			body,
+			html {
+				margin: 0;
+				padding: 0;
+			}
+			
+			#canvas1 {
+				/*background-color: gainsboro;*/
+				box-shadow: 0 0 3px red;
+			}
+		</style>
+	</head>
+
+	<body>
+		<canvas id="canvas1" width="" height="">
+			浏览器版本那么低，你咋不上天呢？
+		</canvas>
+	</body>
+	<script type="text/javascript">
+		var canvas = document.getElementById('canvas1');
+		var context = canvas.getContext('2d');
+		//Math.PI:180°
+		var deg = Math.PI / 180;
+
+		//预加载图片
+		function loading(objImg, obj) {
+			var length = 0;
+			for(var keys in objImg) {
+				length++;
+			}
+			var num = 0;
+			var imgObj = {}
+			for(var keys in objImg) {
+				var img = new Image();
+				img.src = objImg[keys];
+				//闭包防止变量污染
+				img.onload = (function(keyy) {
+					return function() {
+
+						num++;
+						imgObj[keyy] = this;
+						var loads = num / length;
+						if(obj.load) {
+							obj.load(loads);
+						}
+						if(num >= length) {
+							if(obj.complete) {
+								obj.complete(imgObj);
+							}
+						}
+
+					}
+				})(keys);
+			}
+		}
+
+		loading({
+			"bg": "img/background.png",
+			"hero": "img/herofly.png",
+			"bullet": "img/bullet2.png",
+			"enemy1": "img/enemy1.png",
+			"enemy2": "img/enemy2.png",
+			"enemy3": "img/enemy3.png",
+		}, {
+			complete: main,
+			load: load,
+		});
+
+		function main(imgs) {
+			//			console.log(imgs);
+			//适应屏幕大小
+			var windowWidth = document.documentElement.clientWidth;
+			var windowHeight = document.documentElement.clientHeight;
+			canvas.width = windowWidth;
+			canvas.height = windowHeight;
+
+			//英雄机
+			function Hero() {
+				//英雄级图片
+				this.img = imgs.hero;
+				//因为图片是精灵图（五种状态的英雄机）
+				//英雄机初始化在x方向中间
+				this.x = canvas.width / 2 - this.img.width / 5 / 2;
+				this.y = canvas.height - this.img.height * 2;
+				this.w = this.img.width / 5;
+				this.h = this.img.height;
+				this.life=true;
+				this.index=0;
+				this.len=5;
+				this.ani=true;
+
+			}
+			Hero.prototype.draw = function() {
+//									console.log(this.img.height)
+				context.drawImage(this.img, this.w*this.index, 0, this.w, this.h, this.x, this.y, this.w, this.h);
+			}
+			
+			//子弹
+			function Bullet(){
+				this.img=imgs.bullet;
+				this.w=this.img.width;
+				this.h=this.img.height;
+				this.x=hero.x+(hero.w-this.w)/2;
+				this.y=hero.y+this.img.height/2;
+				//发射速度
+				this.speedY=5;
+				//子弹威力
+				this.power=1;
+				
+			}
+			Bullet.prototype.draw=function(){
+				context.drawImage(this.img,this.x,this.y,this.w,this.h);
+			}
+			Bullet.prototype.move=function(){
+				this.y-=this.speedY;
+			}
+			
+			//敌机
+			function Enemy(){
+				//敌机有三种
+				//定义一个随机数按几率出现敌机
+				var num=rand(1,50);
+				//小敌机
+				if(num>=1 &&num<=25){
+					this.img=imgs.enemy1;
+					this.w=this.img.width/5;
+					//共几张图
+					this.len=5;
+					this.speedY=6;
+					this.hp=1;
+				}else if(num>25&&num<=40){
+					//中型敌机
+					this.img=imgs.enemy3;
+					this.w=this.img.width/6;
+					this.speedY=3;
+					this.hp=5;
+					this.len=6;
+				}else{
+					this.img=imgs.enemy2;
+					this.w=this.img.width/10;
+					this.speedY=1;
+					this.hp=10;
+					this.len=10;
+				}
+				this.h=this.img.height;
+				this.x=rand(0,canvas.width-this.w);
+				this.y=-this.h;
+				this.life=true;
+				//第几张图
+				this.index=0;
+				
+				
+			}
+			Enemy.prototype.draw=function(){
+				context.drawImage(this.img,this.w*this.index,0,this.w,this.h,this.x,this.y,this.w,this.h);
+			}
+			Enemy.prototype.move=function(){
+				this.y+=this.speedY;
+			}
+				//定义帧动画
+			var times = 0;
+			var hero = new Hero();
+			//子弹数组
+			var bulletArr=[];
+			//敌机数组
+			var enemyArr=[];
+			function ani() {
+				//背景动画
+				if(times >= canvas.height) {
+					times = 0;
+				}
+				//检测英雄机和敌机像素碰撞
+				for(var i=0;i<enemyArr.length;i++){
+					//矩形碰撞检测
+					if(peng(hero,enemyArr[i])){
+						//像素碰撞检测
+						if(xiangsu(hero,enemyArr[i])){
+							hero.life=false;
+							//死亡冲击波
+							for(var j=0;j<enemyArr.length;j++){
+								enemyArr[j].life=0;
+								enemyArr[j].speedY=0;
+							}
+						}
+					}
+				}
+				//子弹和敌机碰撞，子弹消失，敌机hp减少
+				for(var i=0;i<bulletArr.length;i++){
+					for(var j=0;j<enemyArr.length;j++){
+						if(peng(bulletArr[i],enemyArr[j])){
+							if(xiangsu(bulletArr[i],enemyArr[j])){
+								enemyArr[j].hp-=bulletArr[i].power;
+								bulletArr.splice(i,1);
+								i--;
+								if(enemyArr[j].hp<=0){
+									//生命=false
+									enemyArr[j].life=false;
+									//速度为零
+									enemyArr[j].speedY=0;
+								}
+								break;
+							}
+						}
+					}
+				}
+				
+				//绘制所有图片
+				context.clearRect(0, 0, canvas.width, canvas.height);
+				context.drawImage(imgs.bg, 0, times, canvas.width, canvas.height);
+				context.drawImage(imgs.bg, 0, times - canvas.height, canvas.width, canvas.height);
+				hero.draw();
+				
+				//每二十次创建一个新的子弹
+				if(times%20==0){
+					var bullet=new Bullet();
+					bulletArr.push(bullet);
+				}
+				
+				for(var i=0;i<bulletArr.length;i++){
+					//当子弹i离开屏幕，要从数组中删除这个子弹i
+					if(bulletArr[i].y<=-bulletArr[i].h){
+						bulletArr.splice(i,1);
+						i--;
+						continue;
+					}
+					if(hero.life){
+						bulletArr[i].draw();
+						bulletArr[i].move();
+					}
+				}
+				//每50次创建一个敌机
+				if(times%50==0){
+					var enemy=new Enemy();
+					enemyArr.push(enemy);
+				}
+				
+				for(var i=0;i<enemyArr.length;i++){
+					//当子弹i离开屏幕，要从数组中删除这个子弹i
+					if(enemyArr[i].y>=canvas.height){
+						enemyArr.splice(i,1);
+						i--;
+						continue;
+					}
+					enemyArr[i].move();
+					//当生命值为零时，进行死亡动画
+					if(enemyArr[i].life==false){
+						if(enemyArr[i].index<enemyArr[i].len){
+							if(times%5==0){
+								enemyArr[i].index++;
+							}
+							enemyArr[i].draw();
+						}else{
+							enemyArr.splice(i,1);
+							i--;
+							continue;
+						}
+					}
+					enemyArr[i].draw();
+					
+				}
+				//测试敌机数组中有多少敌机
+//				console.log(enemyArr.length);
+				
+				
+				
+				if(hero.life==false){
+					if(hero.index<hero.len){
+						if(times%5==0){
+							hero.index++;
+						}
+						hero.draw();
+					}else{
+						hero.ani=false;
+					}
+				}
+				
+				times++;
+				if(hero.ani){
+					window.requestAnimationFrame(ani);
+				}
+				
+			}
+			ani();
+			//英雄机touch事件
+			canvas.addEventListener("touchmove",function(e){
+				var ev=e||event;
+				var x=ev.touches[0].clientX;
+				var y=ev.touches[0].clientY;
+				hero.x=x-hero.w/2;
+				hero.y=y-hero.h/2;
+			},false);
+
+		}
+		
+		//随机函数
+		function rand(min,max){
+			return Math.random()*(max-min+1)+min;
+		}
+		//碰撞函数
+		function peng(r1,b1){
+			var r1l=r1.x+r1.w;
+			var r1h=r1.y+r1.h;
+			var b1l=b1.x+b1.w;
+			var b1h=b1.y+b1.h;
+			if(r1.x < b1l && b1.x < r1l && b1.y < r1h && r1.y < b1h){
+				return true;
+			}
+			return false;
+		}
+		//像素碰撞
+		function xiangsu(img1, img2) {
+			var minx = img1.x > img2.x ? img1.x : img2.x;
+			var maxx = img1.x + img1.w < img2.x + img2.w ? img1.x + img1.w : img2.x + img2.w;
+			var miny = img1.y > img2.y ? img1.y : img2.y;
+			var maxy = img1.y + img1.h < img2.y + img2.h ? img1.y + img1.h : img2.y + img2.h;
+			context.clearRect(0, 0, canvas.width, canvas.height);
+			context.drawImage(img1.img, img1.x, img1.y);
+			var data1 = context.getImageData(minx, miny, maxx - minx, maxy - miny).data;
+			context.clearRect(0, 0, canvas.width, canvas.height);
+			context.drawImage(img2.img, img2.x, img2.y);
+			var data2 = context.getImageData(minx, miny, maxx - minx, maxy - miny).data;
+			context.drawImage(img1.img, img1.x, img1.y);
+			for(var i = 3; i < data1.length; i += 4) {
+				if(data1[i] > 0 && data2[i] > 0) {
+					return true;
+					break;
+				} 
+			}
+			return false
+		}
+
+		function load(loads) {
+			console.log(loads);
+		}
+	</script>
+
+</html>

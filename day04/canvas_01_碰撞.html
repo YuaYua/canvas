@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			#canvas1 {
+				/*background-color: gainsboro;*/
+				box-shadow: 0 0 3px red;
+			}
+		</style>
+	</head>
+
+	<body>
+		<canvas id="canvas1" width="600" height="600">
+			浏览器版本那么低，你咋不上天呢？
+		</canvas>
+	</body>
+	<script type="text/javascript">
+		var canvas = document.getElementById('canvas1');
+		var context = canvas.getContext('2d');
+		//Math.PI:180°
+		var deg = Math.PI / 180;
+
+		function Rect(x, y, w, h, color) {
+			this.x = x;
+			this.y = y;
+			this.w = w;
+			this.h = h;
+			this.color = color;
+		}
+
+		Rect.prototype.draw = function() {
+			context.beginPath();
+			context.rect(this.x, this.y, this.w, this.h);
+			context.fillStyle = this.color;
+			context.fill();
+			if(arguments.length == 2) {
+				if(context.isPointInPath(arguments[0], arguments[1])) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		var rect1 = new Rect(100, 100, 50, 50, "red");
+		var rect2 = new Rect(300, 300, 50, 50, "blue");
+		var arr = [rect1, rect2];
+		for(var i = 0; i < arr.length; i++) {
+			arr[i].draw()
+		}
+		canvas.onmousedown = function(e) {
+			var ev = e || window.event;
+			var x = ev.clientX - canvas.offsetLeft;
+			var y = ev.clientY - canvas.offsetTop;
+
+			for(var i = 0; i < arr.length; i++) {
+				if(arr[i].draw(x, y)) {
+					var disX = x - arr[i].x;
+					var disY = y - arr[i].y;
+					//闭包
+					(function(i, disX, disY) {
+						document.onmousemove = function(e) {
+							var ev = e || event;
+							var x = ev.clientX - disX-canvas.offsetLeft;
+							var y = ev.clientY - disY-canvas.offsetTop;
+							arr[i].x = x;
+							arr[i].y = y;
+							context.clearRect(0, 0, canvas.width, canvas.height)
+							for(var j = 0; j < arr.length; j++) {
+								arr[j].draw();
+							}
+							console.log("碰上吗"+peng(arr[0],arr[1]));
+						}
+					})(i, disX, disY);
+					document.onmouseup = function() {
+						document.onmousemove = null;
+					}
+				}
+			}
+		}
+		function peng(r1,b1){
+			var r1l=r1.x+r1.w;
+			var r1h=r1.y+r1.h;
+			var b1l=b1.x+b1.w;
+			var b1h=b1.y+b1.h;
+			
+//			if(!(r1.x>=b1l || r1.y>=b1h || b1.x>=r1l || b1.y>=r1h)){
+//				return true;
+//			}
+			if(r1.x < b1l && b1.x < r1l && b1.y < r1h && r1.y < b1h){
+				return true;
+			}
+			return false;
+			//撞了的情况
+//			r1.x<b1.x+b1.w;
+//			r1.y<b1.y+b1.h;
+//			r1.x+r1.w>b1.x;
+//			r1.y+r1.h>b1.y;
+			
+			
+		}
+
+		//判断点是否在最后一个绘制的闭合路径范围内
+		//		context.isPointInPath()
+	</script>
+
+</html>

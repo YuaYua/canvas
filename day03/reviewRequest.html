@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			#canvas1 {
+				/*background-color: gainsboro;*/
+				box-shadow: 0 0 3px red;
+			}
+		</style>
+	</head>
+
+	<body>
+		<canvas id="canvas1" width="600" height="600">
+			浏览器版本那么低，你咋不上天呢？
+		</canvas>
+		<button onclick="stops()">暂停/开始</button>
+		<button onclick="starts()">开始</button>
+		
+	</body>
+	<script type="text/javascript">
+		var canvas = document.getElementById('canvas1');
+		var context = canvas.getContext('2d');
+		//Math.PI:180°
+		var deg = Math.PI / 180;
+		
+		function Rect(x,y,w,h,speedX,color){
+			this.x=x;
+			this.y=y;
+			this.w=w;
+			this.h=h;
+			this.speedX=speedX;
+			this.color=color
+		}
+		Rect.prototype.draw=function(){
+			context.beginPath();
+			context.rect(this.x,this.y,this.w,this.h)
+			context.fillStyle=this.color;
+			context.fill();
+		}
+		
+		var rect1=new Rect(100,100,50,50,2,"red");
+		var times=null;
+		function ani(){
+			context.clearRect(0,0,600,600)
+			rect1.x+=rect1.speedX;
+			rect1.draw();
+			times= window.requestAnimationFrame(ani)
+		}
+		ani();
+		var flag=false;
+		function stops(){
+			if(!flag){
+				window.cancelAnimationFrame(times);
+				flag=true;
+			}else{
+				ani();
+				flag=false;
+			}
+			
+		}
+		
+		function starts(){
+			ani();
+			flag=false;
+		}
+	</script>
+
+</html>
