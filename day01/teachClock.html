@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			#canvas1 {
+				background-color: gainsboro;
+				box-shadow: 0 0 3px red;
+			}
+		</style>
+	</head>
+
+	<body>
+		<canvas id="canvas1" width="600" height="600">
+			浏览器版本那么低，你咋不上天呢？
+		</canvas>
+	</body>
+	<script type="text/javascript">
+		var canvas = document.getElementById('canvas1');
+		var con = canvas.getContext('2d');
+		//Math.PI:180°
+		var deg = Math.PI / 180;
+		
+		
+		//创建一个时钟对象
+		function Clock(x,y,r,color){
+			this.x=x;
+			this.y=y;
+			this.r=r;
+			this.color=color;
+			
+			this.hour=9;
+			this.mins=15;
+			this.sec=30;
+		}
+		
+		Clock.prototype.draw=function(){
+			con.beginPath();
+			con.arc(this.x,this.y,this.r,0,360*deg,false);
+			//保存画布在原点的状态
+			con.save();
+			con.fillStyle=this.color;
+			con.fill();
+			
+			
+			//刻度
+			//将画布移动移动到中心
+			con.translate(300,300);
+			for(var i=0;i<60;i++){
+				//保存当前画布状态（中心）
+				con.save();
+				//旋转画布
+				con.rotate(6*i*deg);
+				if(i%5==0){
+					con.fillStyle="#4169E1"
+					con.fillRect(160,-5,30,10);
+				}else{
+					con.fillStyle="orchid"
+					con.fillRect(160,-3,20,6);
+				}
+				//取出保存的画布状态(中心)
+				con.restore();
+			}
+			//取出画布在原点
+			con.restore();
+		}
+		
+		Clock.prototype.drawZhen=function(){
+			con.save();
+			//设置时针初始状态
+			//将画布移动到中心（原点移动中心）
+			con.translate(300,300);
+			//旋转-90°
+			con.rotate(-90*deg);
+			
+			//设置时针偏移
+			con.save();
+			con.rotate(this.hour*30*deg);
+			con.fillStyle="blueviolet"
+			con.fillRect(0,-4,90,8);
+			con.restore();
+			
+			//设置分针偏移
+			con.save();
+			con.rotate(this.mins*6*deg);
+			con.fillStyle="yellowgreen"
+			con.fillRect(0,-3,120,6);
+			con.restore();
+			
+			//设置秒针偏移
+//			con.save();
+			con.rotate(this.sec*6*deg);
+			con.fillStyle="fuchsia"
+			con.fillRect(0,-2,150,4);
+//			con.restore();
+			
+			con.restore();
+			
+		}
+		
+		var clock=new Clock(300,300,200,"cyan");
+		clock.draw()
+		clock.drawZhen()
+		
+		setInterval(function(){
+			var newDate=new Date();
+			var hours=newDate.getHours();
+			var minues=newDate.getMinutes();
+			var second=newDate.getSeconds();
+			
+			//制作缓动效果
+			//var hourdeg = hours * 30 * deg + minutes * 6 * deg / 12 + second * 6 * deg / 12 / 60
+			//获得当前分针应该旋转的角度
+//			var minutedeg = minutes * 6 * deg + second * 6 * deg / 60;
+			//获得当前秒针应该旋转的角度
+//			var seconddeg = second * 6 * deg;
+			
+			con.clearRect(0,0,600,600)
+			clock.hour=hours;
+			clock.mins=minues;
+			clock.sec=second;
+//			clock.sec+=1;
+////			if(clock.sec%60==0){
+////				clock.mins+=1;
+////			}
+			clock.draw()
+			clock.drawZhen();
+		},1000)
+	</script>
+
+</html>

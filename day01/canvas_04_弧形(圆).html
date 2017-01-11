@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			#canvas1 {
+				background-color: gainsboro;
+				box-shadow: 0 0 3px red;
+			}
+		</style>
+	</head>
+
+	<body>
+		<canvas id="canvas1" width="600" height="600">
+			浏览器版本那么低，你咋不上天呢？
+		</canvas>
+	</body>
+	<script type="text/javascript">
+		var canvas = document.getElementById('canvas1');
+		var context = canvas.getContext('2d');
+		//Math.PI:180°
+		var deg=Math.PI/180;
+		context.beginPath();
+		//绘制圆时涉及弧度
+		//所以要知道0°在时钟三点钟位置
+		//如果度数增加就是需要按照顺时针进行增加
+		//如果度数减小就是往逆时针方向进行
+//		context.arc(x,y,r,startdeg,enddeg,bool)
+		context.arc(300,300,100,0,90*deg,true)
+		context.stroke()
+		
+		
+	</script>
+
+</html>

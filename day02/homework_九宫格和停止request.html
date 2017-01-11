@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			#canvas1 {
+				background-color: gainsboro;
+				box-shadow: 0 0 3px red;
+			}
+		</style>
+	</head>
+
+	<body>
+		<video controls width="600" height="600" id="vid">
+			<source src="HTML5.mp4" type="video/mp4"></source>
+
+			当前浏览器不支持 video直接播放，点击这里下载视频：
+			<a href="myvideo.webm">下载视频</a>
+		</video>
+		<canvas id="canvas1" width="600" height="600">
+			浏览器版本那么低，你咋不上天呢？
+		</canvas>
+	</body>
+	<script type="text/javascript">
+		var canvas = document.getElementById('canvas1');
+		var context = canvas.getContext('2d');
+		var vid = document.getElementById('vid');
+		//Math.PI:180°
+		var deg = Math.PI / 180;
+		var playvid=null
+//		vid.onplay = function() {
+//			vid.play();
+//			ani();
+//			
+//		}
+//		vid.paused=function(){
+//			console.log(1)
+//			vid.pause();
+//			window.cancelAnimationFrame(ani);
+//		}
+
+		vid.addEventListener("play",function(){
+			ani();
+		})
+		vid.addEventListener("pause",function(){
+			//取消requestAnimationFrame
+			window.cancelAnimationFrame(playvid);
+		})
+
+		function ani() {
+			context.drawImage(vid, 0, 0, 600, 600);
+			var imgData = context.getImageData(0, 0, 600, 600);
+			var arr = imgData.data;
+//			console.log(arr)
+			for(var i = 0; i < canvas.height; i++) {
+				for(var j = 0; j < canvas.width; j++) {
+					var p = i * canvas.width + j;
+					if(i < 200 && j < 200) {
+						arr[p * 4 + 0] = 255;
+					} else if(i < 200 && j >= 200 && j < 400) {
+						arr[p * 4 + 1] = 255;
+					} else if(i < 200 && j >= 400) {
+						arr[p * 4 + 2] = 255;
+					} else if(i >= 200 && i < 400 && j < 200) {
+						arr[p * 4 + 0] = 155;
+					} else if(i >= 200 && i < 400 && j >= 200 && j < 400) {
+						arr[p * 4 + 1] = 155;
+					} else if(i >= 200 && i < 400 && j >= 400) {
+						arr[p * 4 + 2] = 155;
+					} else if(i >= 400 && j < 200) {
+						arr[p * 4 + 0] = 100;
+					} else if(i >= 400 && j >= 200 && j < 400) {
+						arr[p * 4 + 1] = 100;
+					} else {
+						arr[p * 4 + 2] = 100;
+					}
+				}
+			}
+			//检测requestAnimationFrame停止
+			console.log(1) 
+			context.putImageData(imgData, 0, 0);
+			playvid=requestAnimationFrame(ani);
+			
+		}
+//		if(vid.paused){
+//				console.log(1)
+//				
+//			}
+	</script>
+
+</html>

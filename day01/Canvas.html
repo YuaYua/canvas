@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			#canvas1{
+				background-color: gainsboro;
+				box-shadow: 0 0 3px red;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="canvas1" width="500" height="500">
+			浏览器版本那么低，你咋不上天呢？
+		</canvas>
+	</body>
+	<script type="text/javascript">
+		//获取canvas
+		var canvas=document.getElementById('canvas1');
+		//canvas的宽高是属性不是样式
+		canvas.width=600;
+		canvas.height=600;
+		//获取上下文（绘制环境）（画纸）
+		var context=canvas.getContext("2d");
+		//beginPath():开始一条新路径
+		context.beginPath();
+		//设置绘制起点
+		context.moveTo(100,100);
+		//设置下一个点
+		context.lineTo(200,200);
+		//设置线条样式
+		//先写好样式再绘制
+		context.strokeStyle="red"
+		context.lineWidth=10;
+		//绘制线条
+		context.stroke();
+		
+		//beginPath():开始一条新路径
+		context.beginPath();
+		context.moveTo(300,300);
+		context.lineTo(300,600);
+		//从新设置画布样式，不然会和之前的一样
+		context.lineWidth=5;
+		context.strokeStyle="blue"
+		context.stroke()
+	</script>
+</html>

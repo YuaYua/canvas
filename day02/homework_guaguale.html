@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			* {
+				margin: 0;
+				padding: 0;
+			}
+			
+			#jinx {
+				position: absolute;
+				width: 600px;
+				height: 600px;
+			}
+			
+			#canvas {
+				position: absolute;
+				box-shadow: 0 0 3px blueviolet;
+			}
+		</style>
+	</head>
+
+	<body>
+		<img id="jinx" src="img/Jinx5.jpg" />
+		<canvas id="canvas" width="600" height="600"></canvas>
+	</body>
+	<script type="text/javascript">
+		var canvas = document.getElementById('canvas');
+		var con = canvas.getContext("2d");
+		con.fillStyle = "#CCCCCC";
+		con.fillRect(0, 0, 800, 600);
+		canvas.onmousedown = function() {
+			document.onmousemove = function(e) {
+				var ev = e || event;
+				con.globalCompositeOperation = "destination-out";
+				con.beginPath();
+				con.arc(ev.clientX, ev.clientY, 50, 0, 360 * Math.PI / 180);
+				con.fill();
+				
+				var obj = con.getImageData(0, 0, 600, 600);
+				var arr = obj.data;
+//				console.log(arr)
+			}
+			document.onmouseup = function() {
+				document.onmousemove = null;
+			}
+		}
+		var num=0;
+		var timer=setInterval(function() {
+			var obj = con.getImageData(0, 0, 600, 600);
+			var arr = obj.data;
+			
+			for(var i = 3; i < arr.length; i += 4) {
+				if(arr[i]==0){
+					num++;
+				}
+			}
+			if(arr.length/2<=num){
+				for(var j=3;j<arr.length;j+=4){
+					arr[j]=0;
+				}
+				con.putImageData(obj,0,0);
+				clearInterval(timer);
+			}
+		}, 500)
+	</script>
+
+</html>

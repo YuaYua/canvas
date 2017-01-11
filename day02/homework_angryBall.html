@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			#canvas1 {
+				/*background-color: gainsboro;*/
+				box-shadow: 0 0 3px red;
+			}
+		</style>
+	</head>
+
+	<body>
+		<canvas id="canvas1" width="800" height="600">
+			浏览器版本那么低，你咋不上天呢？
+		</canvas>
+	</body>
+	<script type="text/javascript">
+		var canvas=document.getElementById('canvas1');
+		var con=canvas.getContext('2d');
+		
+		var deg=Math.PI/180;
+		//随机函数
+		function random(max,min){
+			return parseInt(Math.random()*(max-min+1))+min;
+		}
+		
+		//球的构造函数
+		function Qiu(x,y,radius,color,ltr,ttb,speed){
+			
+			this.x=x;
+			this.y=y;
+			this.radius=radius;
+			this.color=color;
+			this.ltr=ltr;
+			this.ttb=ttb;
+			this.speed=speed;
+		}
+		Qiu.prototype.move=function(){
+			if(this.ltr){
+				this.x+=this.speed;
+				if((this.x+this.radius)>=canvas.width){
+					this.ltr=false;
+				}
+			}else{
+				this.x-=this.speed;
+				if((this.x-this.radius)<=0){
+					this.ltr=true;
+				}
+			}
+			if(this.ttb){
+				this.y+=this.speed;
+				if((this.y+this.radius)>=canvas.height){
+					this.ttb=false;
+				}
+			}else{
+				this.y-=this.speed;
+				if((this.y-this.radius)<=0){
+					this.ttb=true;
+				}
+			}
+			con.beginPath();
+			con.fillStyle=this.color;
+			con.arc(this.x,this.y,this.radius,0,360*deg);
+			con.fill();
+		}
+		var qiuArr=[];
+		for(var i=0;i<60;i++){
+			var radius=random(60,20);
+			var x=random(800,0);
+			var y=random(800,0);
+			var r=random(255,0);
+			var g=random(255,0);
+			var b=random(255,0);
+			var ltr=true;
+			var ttb=true;
+			var speed=random(20,5);
+			var color="rgb("+r+","+g+","+b+")";
+			qiuArr[i]=new Qiu(x,y,radius,color,ltr,ttb,speed);
+			qiuArr[i].move();
+		}
+		setInterval(function(){
+			con.clearRect(0,0,canvas.width,canvas.height);
+			for(var i=0;i<60;i++){
+				qiuArr[i].move();
+			}
+		},50)
+		
+		
+	</script>
+
+</html>

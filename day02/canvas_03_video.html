@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			#canvas1 {
+				background-color: gainsboro;
+				box-shadow: 0 0 3px red;
+			}
+		</style>
+	</head>
+
+	<body>
+		<video width="600" height="600" id="vid">
+			<source src="HTML5.mp4" type="video/mp4"></source>
+			
+			当前浏览器不支持 video直接播放，点击这里下载视频： <a href="myvideo.webm">下载视频</a>
+		</video>
+		<canvas id="canvas1" width="600" height="600">
+			浏览器版本那么低，你咋不上天呢？
+		</canvas>
+	</body>
+	<script type="text/javascript">
+		var canvas = document.getElementById('canvas1');
+		var context = canvas.getContext('2d');
+		var vid=document.getElementById('vid');
+		//Math.PI:180°
+		var deg = Math.PI / 180;
+		
+		vid.oncanplay=function(){
+			vid.play();
+			ani()
+		}
+		function ani(){
+			context.drawImage(vid,0,0,600,600);
+			var imgData=context.getImageData(0,0,600,600);
+			var arr=imgData.data;
+			for(var i=0;i<arr.length;i+=4){
+				if(i<arr.length/4){
+					arr[i]=255;
+				}else if(i<arr.length/2 && i>arr.length/4){
+					arr[i+1]=255;
+				}
+				
+			}
+			context.putImageData(imgData,0,0)
+			window.requestAnimationFrame(ani);
+		}
+		
+	</script>
+
+</html>

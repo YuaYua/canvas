@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+		*{
+			margin: 0;
+			padding: 0;
+		}
+			#canvas{
+				box-shadow: 0 0 5px orchid;
+			}	
+			#move1,#move2{
+				display: block;
+				position: absolute;
+				outline: none;
+				
+				width: 20px;
+				height: 20px;
+				/*border: none;*/
+				box-sizing: border-box;
+				border: 1px solid black;
+				border-radius: 50%;
+			}
+			#move1{
+				top: 140px;
+				left: 140px;
+				background-color: greenyellow;
+			}
+			#move2{
+				top: 440px;
+				left: 440px;
+				background-color: red;
+			}
+			
+		</style>
+	</head>
+	<body>
+		<button id="move1"></button>
+		<button id="move2"></button>
+		<canvas id="canvas" width="600" height="600"></canvas>
+		<h2 id="title">cubic-bezier(0,1,1,0)</h2>
+	</body>
+	<script type="text/javascript">
+		var canvas=document.getElementById("canvas");
+		var con=canvas.getContext("2d");
+		var deg=Math.PI/180;
+		var move1=document.getElementById('move1');
+		var move2=document.getElementById('move2');
+		var title=document.getElementById('title')
+		
+		
+		
+		
+//		con.stroke()
+		function Bezier(x1,y1,x2,y2){
+			this.move1={};
+			this.move1.x=x1;
+			this.move1.y=y1;
+			
+			this.move2={};
+			this.move2.x=x2;
+			this.move2.y=y2;
+		}
+		Bezier.prototype.draw=function(){
+			//背景
+			con.fillStyle="#7FFFD4";
+			con.fillRect(150,150,300,300);
+			con.save();
+			
+			
+			
+			con.beginPath();
+			con.moveTo(150,450);
+			con.lineTo(this.move1.x,this.move1.y);
+			con.strokeStyle="royalblue";
+			con.lineWidth=3;
+			con.stroke();
+			
+			con.beginPath();
+			con.moveTo(450,150);
+			con.lineTo(this.move2.x,this.move2.y);
+			con.stroke();
+			con.restore();
+			
+			con.save();
+			con.beginPath();
+			con.moveTo(150,450);
+			con.bezierCurveTo(this.move1.x,this.move1.y,this.move2.x,this.move2.y,450,150);
+			con.lineWidth=5
+			con.stroke();
+			con.restore();
+			
+			con.beginPath();
+			con.fillStyle="white";
+			con.arc(150,450,10,0,360*deg)
+			con.fill();
+			con.stroke();
+			
+			con.beginPath();
+			con.fillStyle="white";
+			con.arc(450,150,10,0,360*deg)
+			con.fill();
+			con.stroke();
+			
+		}
+		Bezier.prototype.word=function(){
+			var t1=((this.move1.x-150)/300).toFixed(2);
+			var t2=((450-this.move1.y)/300).toFixed(2);
+			var t3=((this.move2.x-150)/300).toFixed(2);
+			var t4=((450-this.move2.y)/300).toFixed(2);
+			var arr=[t1,t2,t3,t4]
+//			console.log(arr);
+			for(var i=0;i<arr.length;i++){
+				if(arr[i]=="0.00"){
+					arr[i]="0";
+				}else if(arr[i]=="1.00"){
+					arr[i]="1";
+				}
+			}
+			title.innerText="cubic-bezier("+arr[0]+","+arr[1]+","+arr[2]+","+arr[3]+")";
+		}
+		
+		var bezier=new Bezier(150,150,450,450);
+		bezier.draw();
+		bezier.word()
+		
+		move1.onmousedown=move2.onmousedown=function(){
+			var _this=this;
+			document.onmousemove=function(e){
+				var ev=e||event;
+				var x=ev.clientX;
+				var y=ev.clientY;
+				if(_this.id=="move1"){
+					move=bezier.move1;
+				}else if(_this.id="move2"){
+					move=bezier.move2;
+				}
+				move.x=x;
+				move.y=y;
+				_this.style.left=x-10+'px';
+				_this.style.top=y-10+'px';
+				con.clearRect(0,0,600,600);
+				bezier.draw();
+				bezier.word()
+				
+			}
+			document.onmouseup=function(){
+				document.onmousemove=null;
+			}
+		}
+		
+		
+		
+		
+		
+	</script>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			#canvas1 {
+				background-color: gainsboro;
+				box-shadow: 0 0 3px red;
+			}
+		</style>
+	</head>
+
+	<body>
+		<canvas id="canvas1" width="600" height="600">
+			浏览器版本那么低，你咋不上天呢？
+		</canvas>
+	</body>
+	<script type="text/javascript">
+		var canvas=document.getElementById('canvas1');
+		var context=canvas.getContext('2d');
+		
+
+
+
+//		var x=100;
+//		var y=400;
+		function random(max,min){
+			return parseInt(Math.random()*(max-min+1)+min);
+		}
+//		循环创建矩形
+//		for(var i=0;i<4;i++){
+//			var dis=50;
+//			var r=random(0,255);
+//			var g=random(0,255);
+//			var b=random(0,255);
+//			context.beginPath();
+//			context.moveTo(x,x);
+//			context.lineTo(x,y);
+//			context.lineTo(y,y);
+//			context.lineTo(y,x);
+//			context.fillStyle="rgb("+r+","+g+","+b+")";
+//			context.fill();
+//			x+=dis;
+//			y+=dis;
+//		}
+		//fillRect(x,y,w,h)
+		
+		// 不用beginPath
+//		context.fillStyle="yellow"
+//		context.fillRect(100,200,300,100);
+//		context.fillStyle="aquamarine"
+//		context.fillRect(100,350,100,100);
+//		
+
+		//使用rect绘制最后要使用fill填充
+		context.beginPath();
+		context.rect(300,400,200,100);
+		context.fillStyle="aqua"
+		context.fill();
+		//使用rect再次绘制时需要使用beginPath，否则下面的fillStyle会把上面的颜色覆盖
+		context.beginPath();
+		context.rect(100,100,200,200);
+		context.fillStyle="red"
+		context.fill();
+		
+		
+		//面向对象创建矩形
+		function Rect(x,y,w,h,color){
+			this.x=x;
+			this.y=y;
+			this.w=w;
+			this.h=h;
+			this.color=color;
+		}
+		Rect.prototype.draw=function(){
+			context.beginPath();
+			context.rect(this.x,this.y,this.w,this.h);
+			context.fillStyle=this.color;
+			context.fill();
+		}
+		var rectArr=[];
+		for(var i=0;i<4;i++){
+			var r=random(0,255);
+			var g=random(0,255);
+			var b=random(0,255);
+			var rect1=new Rect(100+50*i,100+50*i,400,200,"rgb("+r+","+g+","+b+")")
+			rect1.draw();
+			rectArr.push(rect1)
+		}
+		
+	</script>
+</html>

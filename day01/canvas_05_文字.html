@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	<style type="text/css">
+			#canvas1 {
+				background-color: gainsboro;
+				box-shadow: 0 0 3px red;
+			}
+		</style>
+	</head>
+
+	<body>
+		<canvas id="canvas1" width="600" height="600">
+			浏览器版本那么低，你咋不上天呢？
+		</canvas>
+	</body>
+	<script type="text/javascript">
+		var canvas = document.getElementById('canvas1');
+		var context = canvas.getContext('2d');
+		
+		//文字内容与样式
+		var text="League of Legends";
+		context.font="50px serif";
+		
+		//渐变设置在绘制前
+		var gradient=context.createLinearGradient(100,0,400,400);
+		gradient.addColorStop("0","red");
+		gradient.addColorStop("0.5","green");
+		gradient.addColorStop("1","blue");
+		
+		context.fillStyle=gradient;
+		context.fillText(text,100,100);
+		context.fillRect(100,150,400,400)
+		
+		
+	</script>
+</html>

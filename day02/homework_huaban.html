@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+		*{
+			margin: 0;
+			padding: 0;
+		}
+			#canvas1 {
+				background-color: gainsboro;
+				box-shadow: 0 0 3px red;
+			}
+		</style>
+	</head>
+
+	<body>
+		<canvas id="canvas1" width="600" height="600">
+			浏览器版本那么低，你咋不上天呢？
+		</canvas>
+		<button id="pen">画笔</button>
+		<button id="eraser">橡皮擦</button>
+	</body>
+	<script type="text/javascript">
+		var canvas = document.getElementById('canvas1');
+		var con = canvas.getContext('2d');
+		//Math.PI:180°
+		var deg = Math.PI / 180;
+		
+		var pen=document.getElementById('pen');
+		var eraser=document.getElementById('eraser');
+		
+		pen.onclick=function(){
+			canvas.onmousedown=function(e){
+				var ev=e||event;
+				var sX=ev.clientX;
+				var sY=ev.clientY;
+				con.beginPath();
+				con.moveTo(sX,sY);
+				document.onmousemove=function(e){
+					var ev=e||event;
+					con.lineTo(ev.clientX,ev.clientY)
+					con.lineWidth=3;
+					con.stroke();
+				}
+				document.onmouseup=function(){
+					document.onmousemove=null;
+				}
+			}
+		}
+		eraser.onclick=function(){
+			canvas.onmousedown=function(e){
+				var ev=e||event;
+				document.onmousemove=function(e){
+					var ev=e||event;
+					con.globalCompositeOperation="destination-out";
+					con.beginPath();
+					con.fillStyle="black";
+					con.arc(ev.clientX,ev.clientY,30,0,360*deg);
+					con.fill();
+				}
+				document.onmouseup=function(){
+					document.onmousemove=null;
+				}
+			}
+		}
+		
+	</script>
+
+</html>

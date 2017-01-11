@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			img{
+				position: absolute;
+				top: 100px;
+				left: 100px;
+				width: 600px;
+				height: 400px;
+			}
+			canvas{
+				border: 1px solid red;
+				position: absolute;
+				background-color: transparent;
+				transition: all 2s;
+			}
+		</style>
+	</head>
+	<body>
+		<img src="img/Jinx5.jpg"/>
+		<canvas id="canvas" width="800" height="600"></canvas>
+	</body>
+	<script type="text/javascript">
+		var canvas=document.getElementById('canvas');
+		var con=canvas.getContext('2d');
+		var deg = Math.PI / 180;
+		con.fillStyle="#CCCCCC";
+		con.fillRect(0,0,800,600);
+		
+		
+
+		canvas.onmousedown=function(e){
+			var ev=e||event;
+			con.globalCompositeOperation="destination-out";
+			con.beginPath();
+//			con.fillStyle="white";
+			con.arc(ev.clientX,ev.clientY,50,0,360*deg);
+			con.fill();
+			con.globalCompositeOperation="destination-out";
+			document.onmousemove=function(e){
+				//透明度
+				alphe();
+				var ev=e||event;
+				con.beginPath();
+				con.arc(ev.clientX,ev.clientY,50,0,360*deg);
+				con.fill();
+			}
+			document.onmouseup=function(){
+				document.onmousemove="";
+			}
+		}
+		
+		function alphe(){
+			var imgdata=con.getImageData(0,0,800,600);
+			var arr=imgdata.data;
+			var times=0;
+			for(var i=0;i<arr.length;i+=4){
+				//透明度的取值范围跟rgb一样也是0~255
+				//但是如果需要半透明效果还是需要将a的值设在0~1之间
+//				arr[i+3]=0~255  0~1
+				if(arr[i+3]==0){
+					times++;	
+				}
+			}
+			if(arr.length/4/2<=times){
+				canvas.style.opacity=0
+			}
+		}
+	</script>
+</html>

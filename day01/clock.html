@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			#canvas1 {
+				background-color: RGB(103, 99, 250);
+				box-shadow: 0 0 3px red;
+			}
+		</style>
+	</head>
+
+	<body>
+		<canvas id="canvas1" width="800" height="800">
+			不支持canvas，请升级或更换浏览器
+		</canvas>
+	</body>
+
+	<script type="text/javascript">
+		var canvas = document.getElementById('canvas1');
+		var con = canvas.getContext('2d');
+		var deg = Math.PI / 180;
+		//中心
+		var cx = canvas.width / 2;
+		var cy = canvas.height / 2
+		
+		var text="12";
+		con.font = "20px serif";
+		con.fillStyle='black';
+		con.fillText(text, 100, 20);
+		function drawClock(id) {
+			
+			//清空画布
+			con.clearRect(0, 0, cx * 2, cy * 2);
+			var text="12";
+			con.font = "20px serif";
+			con.fillStyle='black';
+			con.fillText(text, 390, 150);
+			
+			var text="3";
+			con.font = "20px serif";
+			con.fillStyle='black';
+			con.fillText(text, 655, 408);
+			
+			var text="6";
+			con.font = "20px serif";
+			con.fillStyle='black';
+			con.fillText(text, 395, 665);
+			
+			var text="9";
+			con.font = "20px serif";
+			con.fillStyle='black';
+			con.fillText(text,140,408);
+			//表盘
+			con.beginPath();
+			con.lineWidth = 10;
+			con.arc(cx, cy, 300, 0, 360 * deg, false);
+			con.stroke();
+			//获取当前时间
+			var now = new Date();
+			var sec = now.getSeconds();
+			sec = sec < 10 ? "0" + sec : sec;
+			var mins = now.getMinutes();
+			mins = mins < 10 ? "0" + mins : mins;
+			var hours = now.getHours();
+			hours = hours < 10 ? "0" + hours : hours;
+			//显示当前时间
+			con.save();
+			con.translate(0, 200);
+			var text = "系统当前时间为：" + hours + "时" + mins + "分" + sec + "秒";
+			con.font = "40px serif";
+			var color = con.createLinearGradient(100, 0, 800, 0)
+			color.addColorStop("0", "#00FFFE");
+			color.addColorStop("0.5", "#3FFF73");
+			color.addColorStop("1", "#FFFF76");
+			con.fillStyle = color;
+			con.fillText(text, 100, 570);
+			con.restore();
+
+			//刻度盘
+			//时
+			for(var i = 0; i < 12; i++) {
+				con.save();
+				//更改起始位到中心
+				con.translate(cx, cy);
+				//设置刻度样式
+				con.lineWidth = 7;
+				con.strokeStyle = "#00FFFF";
+				//旋转角度
+				con.rotate(i * 30 * deg);
+
+				con.beginPath();
+				con.moveTo(0, -290);
+				con.lineTo(0, -270);
+				con.stroke();
+				con.restore();
+			}
+			//分
+			for(var i = 0; i < 60; i++) {
+				con.save();
+				con.translate(cx, cy);
+				con.lineWidth = 3;
+				con.strokeStyle = "#00FFFF";
+				//旋转角度
+				con.rotate(i * 6 * deg);
+
+				con.beginPath();
+				con.moveTo(0, -290);
+				con.lineTo(0, -280);
+				con.stroke();
+				con.restore();
+			}
+
+			//时针
+			con.save();
+			con.translate(cx, cy);
+			con.lineWidth = 7;
+			con.strokeStyle = "blue";
+			//旋转角度
+			con.rotate(hours * 30 * deg);
+			con.beginPath();
+			con.moveTo(0, 15);
+			con.lineTo(0, -150);
+			con.stroke();
+			con.restore();
+
+			//分针
+			con.save();
+			con.translate(cx, cy);
+			con.lineWidth = 5;
+			con.strokeStyle = "orange";
+			//旋转角度
+			con.rotate(mins * 6 * deg);
+			con.beginPath();
+			con.moveTo(0, 18);
+			con.lineTo(0, -220);
+			con.stroke();
+			con.restore();
+
+			//秒针
+			con.save();
+			con.translate(cx, cy);
+			con.lineWidth = 3;
+			con.strokeStyle = "red";
+			//旋转角度
+			con.rotate(sec * 6 * deg);
+			con.beginPath();
+			con.moveTo(0, 15);
+			con.lineTo(0, -250);
+			con.stroke();
+			//			con.restore();
+			//中心
+			con.beginPath();
+			con.fillStyle = "white";
+			con.strokeStyle = "red";
+			con.arc(0, 0, 5, 0, 360 * deg, false);
+			con.fill();
+			con.stroke();
+			con.closePath()
+			con.restore();
+
+		}
+		drawClock();
+		setInterval(drawClock, 1000)
+	</script>
+
+</html>

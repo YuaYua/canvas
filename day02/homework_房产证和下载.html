@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			* {
+				margin: 0;
+				padding: 0;
+			}
+			
+			canvas {
+				box-shadow: 0 0 3px sandybrown;
+				position: absolute;
+			}
+			
+			#make,
+			#down {
+				position: absolute;
+				top: 600px;
+			}
+			
+			#down {
+				left: 50px;
+			}
+			/*#bg{
+				position: absolute;
+				top: 100px;
+				left: 10px;
+			}*/
+			
+			#name {
+				/*display: block;*/
+				position: absolute;
+				width: 100px;
+				height: 16px;
+				top: 204px;
+				left: 188px;
+			}
+			
+			#dates {
+				position: absolute;
+				width: 150px;
+				height: 16px;
+				top: 294px;
+				left: 185px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<!--<img id="bg" src="img/66A7B05FB5E42F66927D19967FE047FA.jpg"/>-->
+		<canvas id="canvas" width="600" height="600"></canvas>
+		<input type="text" id="name" value="" />
+		<input type="text" id="dates" value="" />
+		<a id="down">下载</a>
+		<button id="make">制作</button>
+	</body>
+	<script type="text/javascript">
+		var canvas = document.getElementById('canvas');
+		var con = canvas.getContext("2d");
+
+		//		var bg=document.getElementById('bg');
+		var names = document.getElementById('name');
+		var dates = document.getElementById('dates');
+		var makes = document.getElementById('make');
+		var down = document.getElementById('down');
+		
+		
+		
+		var img = new Image();
+		img.src = "img/66A7B05FB5E42F66927D19967FE047FA.jpg";
+		img.onload = function() {
+			con.drawImage(img, 10, 100);
+			makes.onclick = function() {
+				
+				var text1 = names.value;
+				names.value = "";
+				con.font = "16px serif";
+				con.fillStyle = '#63645C';
+				con.fillText(text1, 188, 216);
+				names.style.display = "none";
+
+				var text2 = dates.value;
+				dates.value = "";
+				con.font = "16px serif";
+				con.fillStyle = '#63645C';
+				con.fillText(text2, 188, 316);
+				dates.style.display = "none";
+				var url = canvas.toDataURL();
+				down.href = url;
+				
+			}
+			
+			
+			
+			//下载
+			down.download="hh";
+//			con.fillRect(500,0,100,100)
+			
+		}
+		
+	</script>
+
+</html>

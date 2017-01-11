@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title> 旋转的太极 </title>
+        <meta name="Generator" content="EditPlus">
+        <meta name="Author" content="Supegg">
+        <script type = "text/javascript">
+            function TheGreatUltimate(canvasId) {
+                var canvas = document.getElementById(canvasId);
+                var context = canvas.getContext("2d");
+                var lastTime = new Date().getTime();
+                var timeDiff; 
+                var speed = Math.PI; //初始速度 2s走一圈
+                var angle = 0;
+                
+                //创建一个canvas对象，但没有写入html
+                var buffer = document.createElement("canvas");
+                buffer.width = 320;
+                buffer.height = 240;
+                var bufferCtx = buffer.getContext("2d"); //获取下一帧的绘图环境
+
+                this.init = function () {
+                    if (context != undefined) {
+                        canvas.height = 240;
+                        canvas.width = 320;
+
+                        setInterval(this.draw, 1000 / 60);
+                    }
+                }
+
+                this.draw = function () {
+                    timeDiff = (new Date().getTime() - lastTime) / 1000;
+                    lastTime = new Date().getTime();
+                    angle += speed * timeDiff;
+
+                    bufferCtx.clearRect(0, 0, canvas.width, canvas.height);
+                    bufferCtx.beginPath();
+                    bufferCtx.rect(0, 0, canvas.width, canvas.height);
+                    bufferCtx.fillStyle = "#81F7F3";
+                    bufferCtx.fill();
+
+                    bufferCtx.setTransform(1, 0, 0, 1, 0, 0);
+
+                    bufferCtx.font = "italic 18px 宋体";
+                    bufferCtx.strokeStyle = "yellow";
+                    bufferCtx.fillStyle = "green";
+                    bufferCtx.fillText("小键盘+：加速；-：减速；0：重置", 10, 238);
+
+                    bufferCtx.translate(canvas.width/2,canvas.height / 2);
+                    bufferCtx.rotate(angle); //旋转
+
+                    bufferCtx.beginPath();
+                    bufferCtx.arc(0, 0, 100, 0, Math.PI, true);
+                    bufferCtx.fillStyle = "black";
+                    bufferCtx.fill();
+
+                    bufferCtx.beginPath();
+                    bufferCtx.arc(0, 0, 100, 0, Math.PI, false);
+                    bufferCtx.fillStyle = "white";
+                    bufferCtx.fill();
+
+                    bufferCtx.beginPath();
+                    bufferCtx.arc(-50, 0, 50, 0, Math.PI, false);
+                    bufferCtx.fillStyle = "black";
+                    bufferCtx.fill();
+
+                    bufferCtx.beginPath();
+                    bufferCtx.arc(50, 0, 50, 0, Math.PI, true);
+                    bufferCtx.fillStyle = "white";
+                    bufferCtx.fill();
+
+                    bufferCtx.beginPath();
+                    bufferCtx.arc(50, 0, 10, 0, 2 * Math.PI, false);
+                    bufferCtx.fillStyle = "black";
+                    bufferCtx.fill();
+
+                    bufferCtx.beginPath();
+                    bufferCtx.arc(-50, 0, 10, 0, 2 * Math.PI, true);
+                    bufferCtx.fillStyle = "white";
+                    bufferCtx.fill();
+
+                    context.drawImage(buffer, 0, 0); //buffer是一个绘图对象，此处作为图片处理
+                }
+
+                this.speedUp = function () {
+                    speed += Math.PI / 6;
+                }
+
+                this.speedDown = function () {
+                    speed -= Math.PI / 6;
+                }
+                this.resetSpeed = function () {
+                    speed = Math.PI;
+                }
+            }
+            window.onload = function () {
+                var theGreatUltimate = new TheGreatUltimate("canvas");
+                theGreatUltimate.init();
+
+                document.onkeyup = function (e) {
+                    if (e.keyCode == 107) { theGreatUltimate.speedUp(); }
+                    if (e.keyCode == 109) { theGreatUltimate.speedDown(); }
+                    if (e.keyCode == 96) { theGreatUltimate.resetSpeed(); }
+                }
+            }
+        </script>
+    </head>
+
+    <body>
+        <canvas id = "canvas">your browser don't support canvas.</canvas>
+    </body>
+</html>

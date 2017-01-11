@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			#canvas1{
+				background-color: bisque;
+				border: 1px solid red;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="canvas1" width="600" height="600">
+			hh
+		</canvas>
+	</body>
+	<script type="text/javascript">
+		var canvas=document.getElementById('canvas1');
+		var con=canvas.getContext('2d');
+		var deg=Math.PI/180;
+		
+		con.save();
+		con.beginPath();
+		con.shadowOffsetX=3;
+		con.shadowOffsetY=3;
+		con.shadowColor="#00FFFF";
+		con.shadowBlur=20;
+		con.fillStyle='orange';
+		con.fillRect(100,100,200,200);
+		
+		con.restore();
+		con.beginPath();
+		con.arc(300,300,100,90*deg,-90*deg,true);
+		con.fillStyle="red";
+		con.fill();
+		
+	</script>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			#canvas1 {
+				background-color: gainsboro;
+				box-shadow: 0 0 3px red;
+			}
+		</style>
+	</head>
+
+	<body>
+		<canvas id="canvas1" width="800" height="800">
+			不支持canvas，请升级或更换浏览器
+		</canvas>
+	</body>
+
+	<script type="text/javascript">
+		var canvas = document.getElementById('canvas1');
+		var context = canvas.getContext('2d');
+		var deg = Math.PI / 180;
+
+		context.translate(400, 400);
+		var i=0
+		setInterval(function() {
+			context.save();
+			i++;
+			context.clearRect(0, 0, canvas.width, canvas.height);
+			context.rotate(i * deg);
+			context.translate(-400, -400);
+			
+			context.beginPath();
+			context.arc(400, 400, 300, 0, 360 * deg, true)
+			context.fillStyle = "white";
+			context.fill();
+
+			context.beginPath();
+			context.arc(400, 400, 300, 0, 180 * deg, true)
+			context.fillStyle = "black";
+			context.fill();
+
+			context.beginPath();
+			context.arc(250, 400, 150, 0, 360 * deg, true)
+			context.fillStyle = "white";
+			context.fill();
+
+			context.beginPath();
+			context.arc(250, 400, 50, 0, 360 * deg, true)
+			context.fillStyle = "black";
+			context.fill();
+
+			context.beginPath();
+			context.arc(550, 400, 150, 0, 360 * deg, true)
+			context.fillStyle = "black";
+			context.fill();
+
+			context.beginPath();
+			context.arc(550, 400, 50, 0, 360 * deg, true)
+			context.fillStyle = "white";
+			context.fill();
+			
+			context.restore();
+			
+		}, 50)
+	</script>
+
+</html>

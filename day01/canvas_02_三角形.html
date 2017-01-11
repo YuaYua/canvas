@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			#canvas1 {
+				background-color: gainsboro;
+				box-shadow: 0 0 3px red;
+			}
+		</style>
+	</head>
+
+	<body>
+		<canvas id="canvas1" width="500" height="500">
+			浏览器版本那么低，你咋不上天呢？
+		</canvas>
+	</body>
+	<script type="text/javascript">
+		var canvas=document.getElementById('canvas1');
+		
+		var context=canvas.getContext('2d');
+		
+		context.beginPath();
+		context.moveTo(100,100);
+		context.lineTo(300,300);
+		context.lineTo(100,400);
+		//closePath：从当前点连接到起始点，形成一个闭合路径
+		context.closePath()
+//		context.strokeStyle='red';
+//		context.stroke();
+		context.fillStyle="#00FFFF"
+		//fill:填充闭合路径
+		context.fill()
+
+		
+	</script>
+</html>

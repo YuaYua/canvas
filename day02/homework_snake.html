@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			#canvas1 {
+				/*background-color: gainsboro;*/
+				box-shadow: 0 0 3px red;
+			}
+		</style>
+	</head>
+
+	<body>
+		div
+		<canvas id="canvas1" width="800" height="600">
+			浏览器版本那么低，你咋不上天呢？
+		</canvas>
+	</body>
+	<script type="text/javascript">
+		var canvas=document.getElementById('canvas1');
+		var con=canvas.getContext('2d');
+		
+		function snake(x,y){
+			this.x=x;
+			this.y=y;
+			
+		}
+		
+		con.beginPath();
+		con.strokeStyle="black";
+		con.fillStyle="red";
+		con.strokeRect(100,100,20,20);
+		con.fillRect(100,100,20,20);
+
+		
+	</script>
+</html>
